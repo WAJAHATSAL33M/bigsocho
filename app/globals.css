@@ -86,3 +86,15 @@ a{color:var(--green)}.footer-links{display:flex;gap:20px;flex-wrap:wrap}.logo-li
 @media(max-width:760px){.grid > .card .card-social-actions{grid-template-columns:repeat(3,minmax(0,1fr));gap:2px}.grid > .card:nth-child(5n) .card-social-actions{grid-template-columns:repeat(3,minmax(0,1fr))}.grid > .card .card-social-actions .icon-button{min-height:40px}.comment-dialog-body{padding:28px 20px}}
 
 .copy-prompt-control{position:relative;min-width:0;display:flex;justify-content:center}.copy-prompt-control>.icon-button{width:100%}.prompt-feedback{position:absolute;bottom:100%;right:0;width:130px;background:var(--green);color:#fff;padding:8px;border-radius:6px;font-size:12px;z-index:2}.icon-button:disabled{opacity:.4;cursor:not-allowed}.admin-publish-card textarea{width:100%;margin-top:9px;border:1px solid #dce4df;border-radius:8px;padding:12px 13px;font:16px/1.5 Arial;resize:vertical}.article-prompt{border:1px solid var(--line);border-radius:12px;padding:20px;background:white}.article-prompt .copy-prompt-control{justify-content:start}.article-prompt .icon-button{width:auto;gap:8px;padding:10px}.grid > .card:nth-child(5n) .card-social-actions{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+/* Labeled prompt button, with all three card actions kept on one row. */
+.grid > .card .card-social-actions,
+.grid > .card:nth-child(5n) .card-social-actions{grid-template-columns:24px 24px minmax(0,1fr);gap:6px;align-items:center}
+.copy-prompt-control .copy-prompt-button,
+.grid > .card .card-social-actions .copy-prompt-button,
+.article-prompt .copy-prompt-button{background:var(--green);color:#fff;border:1px solid var(--green);border-radius:8px;min-height:40px;padding:8px;gap:6px;justify-content:center;font-size:12px;font-weight:600;white-space:nowrap}
+.copy-prompt-button svg{width:16px;height:16px;flex-shrink:0}
+.copy-prompt-control .copy-prompt-button:hover:not(:disabled){background:#183a30;border-color:#183a30}
+.copy-prompt-control .copy-prompt-button:disabled{background:#eef1ef;color:#7c8580;border-color:#e1e6e2;opacity:1}
+@media(max-width:420px){.grid > .card .card-social-actions .copy-prompt-button{font-size:11px;padding-inline:3px}.grid > .card .copy-prompt-button svg{display:none}.grid > .card .card-social-actions,.grid > .card:nth-child(5n) .card-social-actions{gap:3px}}
+@media(max-width:360px){.grid > .card .card-social-actions .copy-prompt-button{font-size:10px}.grid > .card .card-social-actions,.grid > .card:nth-child(5n) .card-social-actions{gap:2px}}
