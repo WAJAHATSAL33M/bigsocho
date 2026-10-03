@@ -51,3 +51,10 @@ Sessions expire after eight hours and use signed HttpOnly, SameSite Strict cooki
 ```sh
 npm test
 ```
+
+
+## Reader actions and comments
+
+Cards include heart likes, dislikes, bookmarks, comments and sharing. Reactions and bookmarks are stored in the reader's browser, with like/dislike mutually exclusive. Sharing uses the device share sheet or copies the article link. Card excerpts are limited to 15 words; the launch descriptions contain 10–15 words.
+
+Comments use the existing server-side GitHub token and session-secret configuration. Names and comments are saved to `content/comments.json` as pending. Open `/admin/comments` or **Review comments** in the admin sidebar to approve or reject them. Only approved comments are returned publicly. Anonymous comments are rate-limited per process and checked against published article slugs; use host-level rate limiting for production across multiple server instances. No email addresses are collected. Privacy disclosures explain the storage and publication of comments.
