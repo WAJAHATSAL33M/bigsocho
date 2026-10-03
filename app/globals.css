@@ -120,3 +120,30 @@ a{color:var(--green)}.footer-links{display:flex;gap:20px;flex-wrap:wrap}.logo-li
  .grid > .card:nth-child(3n) .content{padding:16px 12px;min-width:0}
  .grid > .card:nth-child(3n) .title{font-size:13px}
 }
+
+/* Larger media and tighter journal spacing. */
+main:not(.admin-main):not(.admin-login):not(.reader){padding:28px 24px 40px}
+.intro{gap:18px}.intro h1{margin-bottom:10px}.eyebrow{margin-bottom:10px}
+.toolbar{margin:22px 0 16px}
+.grid{gap:16px 14px;align-items:start}
+.grid > .card .image-button{aspect-ratio:1/1}
+.grid > .card .content{padding:12px}
+.grid > .card .title,.grid > .card:nth-child(5n) .title{margin-bottom:7px}
+.grid > .card .author{margin-top:0;gap:5px;font-size:11px}
+.grid > .card .actions{margin-top:8px;padding-top:7px}
+@media(max-width:760px){
+ main:not(.admin-main):not(.admin-login):not(.reader){padding:22px 10px 30px}
+ .intro{gap:14px}.intro p{font-size:14px;line-height:1.45}
+ .toolbar{margin:18px 0 12px;gap:9px}
+ .grid{gap:10px 8px}
+ .grid > .card .image-button,
+ .grid > .card:nth-child(5n) .image-button,
+ .grid > .card.video-card .image-button{aspect-ratio:4/5}
+ .grid > .card .content,.grid > .card:nth-child(5n) .content{padding:9px 8px}
+ .grid > .card:nth-child(3n){grid-template-columns:minmax(0,48%) minmax(0,52%)}
+ .grid > .card:nth-child(3n) .image-button{aspect-ratio:auto;min-height:145px}
+ .grid > .card:nth-child(3n) .content{padding:10px 8px}
+ .grid > .card .author{font-size:10px}
+ .grid > .card .avatar{width:18px;height:18px;font-size:10px}
+ .grid > .card .badge{top:7px;left:7px;padding:5px 7px;font-size:10px}
+}
