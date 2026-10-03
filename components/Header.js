@@ -1,0 +1,2 @@
+import Link from 'next/link';
+export default function Header({children}){return <header><Link className="logo-link logo" href="/"><span className="mark">c</span>CREATACANVAS</Link><nav aria-label="Main navigation">{children || <><Link className="nav-link" href="/">Journal</Link><Link className="nav-link" href="/about">About</Link></>}</nav><span className="nav-note">THE INSPIRATION JOURNAL</span></header>}
