@@ -1,4 +1,5 @@
 import Journal from '../components/Journal';
-import posts from '../content/posts.json';
+import {getPublishedPosts} from '../lib/github-content';
+export const dynamic='force-dynamic';
 export const metadata={alternates:{canonical:'/'}};
-export default function Home(){return <Journal posts={posts}/>}
+export default async function Home(){return <Journal posts={await getPublishedPosts()}/>}
