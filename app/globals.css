@@ -98,3 +98,18 @@ a{color:var(--green)}.footer-links{display:flex;gap:20px;flex-wrap:wrap}.logo-li
 .copy-prompt-control .copy-prompt-button:disabled{background:#eef1ef;color:#7c8580;border-color:#e1e6e2;opacity:1}
 @media(max-width:420px){.grid > .card .card-social-actions .copy-prompt-button{font-size:11px;padding-inline:3px}.grid > .card .copy-prompt-button svg{display:none}.grid > .card .card-social-actions,.grid > .card:nth-child(5n) .card-social-actions{gap:3px}}
 @media(max-width:360px){.grid > .card .card-social-actions .copy-prompt-button{font-size:10px}.grid > .card .card-social-actions,.grid > .card:nth-child(5n) .card-social-actions{gap:2px}}
+
+/* Compact, single-line card titles and playable video stories. */
+.grid > .card .title,.grid > .card:nth-child(5n) .title{font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.4;font-weight:600;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal;margin-bottom:12px}
+.video-cover video{display:block;width:100%;height:100%;object-fit:cover;background:#18211e;border-radius:inherit}
+.video-cover .badge{pointer-events:none}
+.reader-video{display:block;width:100%;max-height:480px;background:#18211e;border-radius:16px;margin:28px 0 12px}
+@media(max-width:760px){
+ .grid > .card .title,.grid > .card:nth-child(5n) .title{font-size:13px}
+ .grid > .card:nth-child(5n){grid-column:auto;display:flex;flex-direction:column}
+ .grid > .card:nth-child(5n) .image-button{aspect-ratio:4/3;height:auto;min-height:0}
+ .grid > .card:nth-child(5n) .image-button img{position:static}
+ .grid > .card:nth-child(5n) .content{padding:13px 12px}
+ .grid > .card.video-card{grid-column:1/-1}
+ .grid > .card.video-card .image-button{aspect-ratio:16/9}
+}
