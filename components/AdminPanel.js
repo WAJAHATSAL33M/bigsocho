@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
 import Link from 'next/link';
-const categories=['Home & living','Travel','Style','Food','Creativity'];
+const categories=['Home & living','Travel','Style','Food','Creativity','Inspiration'];
 const covers=['home','travel','style','food','architecture','sunset','flower','city'];
 const blank=()=>({title:'',slug:'',category:'Home & living',excerpt:'',image:'home',imageUrl:'',videoUrl:'',imagePrompt:'',status:'draft',sections:[{heading:'',text:''}]});
 const slugify=value=>value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,100);
