@@ -1,60 +1,43 @@
-# CREATACANVAS
+# CREATACANVAS / bigsocho
 
-Next.js App Router implementation of the approved desktop and mobile blog design. Includes eight complete article pages, search, category filters, browser-local likes and bookmarks, About, Editorial Policy, Privacy and Contact pages, sitemap and robots routes.
+Responsive Next.js blog with a private publisher workspace and MySQL storage, prepared for Hostinger Node.js hosting.
 
-## Run
+## Features
 
-Node.js 20.9 or newer is required.
+- Full-image cards with small one-line titles, search and database-managed categories.
+- Mobile: two side-by-side cards followed by a full-width horizontal card; video support remains.
+- Private `/admin` email/password sign-in; no public signup or admin link in the footer.
+- Overview, post search/status filters, article editor, preview, drafts, publish/update/delete.
+- Cover image uploads and media library; image data persists in MySQL across deployments.
+- Direct MP4/WebM video URLs, optional article image prompts, SEO descriptions and sitemap.
+- Category management with protection against deleting categories in use.
+- Activity history and database status. Legacy comment moderation remains at `/admin/comments`.
+- Hashed passwords, signed secure sessions, origin validation, shared database login throttling, transactional revisions and draft access protection.
+
+## Hostinger deployment
+
+Read **[HOSTINGER.md](HOSTINGER.md)** for the complete steps. Requires Node.js-capable Business/Cloud hosting or a VPS, MySQL, and private environment variables. No hosting credentials, default password or GitHub publishing token are included.
+
+Create the database and import [database/bootstrap.sql](database/bootstrap.sql) using phpMyAdmin. This imports the bundled posts without replacing existing database content. Then connect this repository as a **Next.js Node.js app** in Hostinger and configure environment variables before deploying.
 
 ```sh
-npm install
-cp .env.example .env.local
-npm run dev
-```
-
-Set `NEXT_PUBLIC_SITE_URL` to your real public website origin before building. This controls canonical URLs, article metadata and the sitemap.
-
-```sh
+npm ci
+npm run admin:hash
+# Set private credentials and MySQL configuration in the hosting environment.
 npm run build
-npm run start
+npm start
 ```
 
-## Edit content
+For development, copy `.env.example` to `.env.local`, set the local origin to `http://localhost:3000`, and run `npm run dev`. Escape each `$` in ADMIN_PASSWORD_HASH as `\$` in dotenv files; hPanel values use the raw hash. If using a local MySQL database, `npm run db:setup` creates tables and imports starter content idempotently.
 
-Articles live in `content/posts.json`. Publisher pages live in the other JSON files in `content/`. Styles are in `app/globals.css`; images are in `public/assets/`.
+## Content and storage
 
-## Before AdSense submission
-
-Supply a real public contact address and review the publisher pages. Confirm rights to the supplied reference images or replace them with owned/licensed assets. Review the AI-assisted articles and add substantiated original experience where appropriate. Make the production website public and use an eligible address you can verify. Install the exact verification code and ads.txt entry from your own AdSense account; no fake publisher ID or ad scripts are included. Update privacy disclosures and implement applicable consent controls before enabling ads. Approval is decided by Google.
-
-## Deployment
-
-This is a standard Next.js project; import the repository into a compatible Node.js/Next.js hosting provider. No hosting account or deployment has been configured by this conversion.
-
-## Admin panel
-
-Open `/admin` to sign in, create or edit a post, preview it, save a draft, or publish. Covers can use the included image library or an HTTPS image URL you have permission to use. Published posts appear immediately; draft posts are excluded from the homepage, article routes, and sitemap.
-
-Configure these **server-side** environment variables on your Next.js host:
-
-- `ADMIN_PASSWORD`: at least 12 characters, preferably a long unique password.
-- `SESSION_SECRET`: at least 32 random characters. Generate it with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
-- `GITHUB_TOKEN`: a fine-grained token restricted to this repository, with **Contents: read and write** permission. Do not paste this into chat or commit it.
-- `GITHUB_REPOSITORY`: `WAJAHATSAL33M/bigsocho`.
-- `GITHUB_BRANCH`: `main`.
-- `NEXT_PUBLIC_SITE_URL`: the exact public origin, such as `https://your-domain.com`. Required for production sign-in and same-origin checks.
-
-Saving creates a GitHub commit in `content/posts.json`; optimistic revision checks reject concurrent edits rather than overwrite them. The public blog reads the current file from GitHub at runtime. It does not rely on a redeployment for a newly published post to appear. GitHub availability and API limits therefore affect content availability; this storage is intended for a small blog, not high-traffic publishing. Without a GitHub token, the bundled initial articles remain readable but admin saving is disabled.
-
-Sessions expire after eight hours and use signed HttpOnly, SameSite Strict cookies with Secure enabled in production. Password or session-secret rotation invalidates sessions. The sign-in endpoint has a per-process attempt limiter; add host-level rate limiting for a multi-instance deployment. Admin routes are excluded from indexing. This setup supports a single administrator and does not provide account invitations or password recovery.
+Runtime publishing uses MySQL, not GitHub commits. `content/posts.json` and `content/comments.json` are starter imports, while the other JSON files supply publisher pages. Uploaded cover images are private until referenced by a published post. Videos remain external HTTPS links. Large video uploads and multiple administrator accounts are not part of this version.
 
 ```sh
 npm test
 ```
 
+Validation limits and live setup checks are documented in HOSTINGER.md. Hostinger deployment, DNS and a live database require configuration in your own hosting account.
 
-## Reader actions and comments
-
-Cards include heart likes, dislikes, bookmarks, comments and sharing. Reactions and bookmarks are stored in the reader's browser, with like/dislike mutually exclusive. Sharing uses the device share sheet or copies the article link. Card excerpts are limited to 15 words; the launch descriptions contain 10–15 words.
-
-Comments use the existing server-side GitHub token and session-secret configuration. Names and comments are saved to `content/comments.json` as pending. Open `/admin/comments` or **Review comments** in the admin sidebar to approve or reject them. Only approved comments are returned publicly. Anonymous comments are rate-limited per process and checked against published article slugs; use host-level rate limiting for production across multiple server instances. No email addresses are collected. Privacy disclosures explain the storage and publication of comments.
+Before monetization, replace placeholder publisher contact details, verify image rights, and review privacy disclosures for services you actually enable. No ad code or analytics trackers are installed by this change.

@@ -1,7 +1,17 @@
 import {cookies} from 'next/headers';
-import {createHmac} from 'node:crypto';
-import {configured,validPassword,createSession,COOKIE,SESSION_SECONDS,trustedOrigin} from '../../../../lib/security.mjs';
+import {configured,validPassword,validEmail,createSession,COOKIE,SESSION_SECONDS,trustedOrigin} from '../../../../lib/security.mjs';
 import {readJson} from '../../../../lib/auth';
+import {databaseConfigured} from '../../../../lib/database.mjs';
+import {reserveLoginAttempt} from '../../../../lib/login-limit.mjs';
 export const runtime='nodejs';
-const attempts=new Map();
-export async function POST(request){if(!trustedOrigin(request))return Response.json({error:'Request origin is not allowed.'},{status:403});if(!configured())return Response.json({error:'Admin login is not configured. Add ADMIN_PASSWORD (12+ characters) and SESSION_SECRET (32+ characters) in your hosting settings.'},{status:503});const key=createHmac('sha256',process.env.SESSION_SECRET).update(request.headers.get('x-forwarded-for')?.split(',')[0]||'unknown').digest('hex');const now=Date.now();for(const [k,v] of attempts)if(v.until<now)attempts.delete(k);if(attempts.size>10000)return Response.json({error:'Sign-in is temporarily unavailable. Please try later.'},{status:429});const entry=attempts.get(key)||{count:0,until:now+15*60*1000};if(entry.count>=5)return Response.json({error:'Too many sign-in attempts. Try again in 15 minutes.'},{status:429});try{const input=await readJson(request);if(!validPassword(input.password)){entry.count++;attempts.set(key,entry);return Response.json({error:'Incorrect password.'},{status:401})}attempts.delete(key);(await cookies()).set(COOKIE,createSession(),{httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:'strict',path:'/',maxAge:SESSION_SECONDS});return Response.json({ok:true})}catch{return Response.json({error:'Unable to sign in. Please try again.'},{status:400})}}
+export async function POST(request){
+ if(!trustedOrigin(request))return Response.json({error:'Request origin is not allowed.'},{status:403});
+ if(!configured()||!databaseConfigured())return Response.json({error:'Private admin access needs configuration. Follow HOSTINGER.md.'},{status:503});
+ try{
+ if(!await reserveLoginAttempt())return Response.json({error:'Too many sign-in attempts. Try again in 15 minutes.'},{status:429});
+ const input=await readJson(request);const passwordOK=await validPassword(input.password);
+ if(!validEmail(input.email)||!passwordOK)return Response.json({error:'Email or password is incorrect.'},{status:401});
+ (await cookies()).set(COOKIE,createSession(),{httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:'strict',path:'/',maxAge:SESSION_SECONDS});
+ return Response.json({ok:true},{headers:{'Cache-Control':'no-store'}});
+ }catch(error){console.error('Login failed:',error.code||error.name);return Response.json({error:'Sign-in unavailable. Check the database setup.'},{status:503})}
+}

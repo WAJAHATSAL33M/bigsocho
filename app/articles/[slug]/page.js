@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import {notFound} from 'next/navigation';
-import {getPublishedPosts} from '../../../lib/github-content';
+import {getPublishedPosts} from '../../../lib/content';
 import Header from '../../../components/Header';
 import CopyPrompt from '../../../components/CopyPrompt';
 export const dynamic='force-dynamic';
