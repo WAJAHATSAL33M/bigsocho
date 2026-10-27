@@ -131,3 +131,8 @@ Public comment submission is now disabled because its UI was removed. Historical
 A nonce-based CSP now blocks inline scripts, inline event handlers and style attributes. Article text is rendered as escaped plain text; publisher HTML is allowlist-sanitized. External HTTPS images/video links remain permitted for your existing content; third-party scripts/analytics are blocked unless explicitly integrated with the CSP.
 
 Do not upload this source repository, database dumps, backup archives or env files to a static/public document root. Deploy through Hostinger's Node.js app integration. The audit cannot inspect or clean your provider filesystem automatically.
+
+
+## Cookie consent and audience analytics
+
+Read [ANALYTICS.md](ANALYTICS.md). Existing deployments must import database/analytics-migration.sql before enabling reports. New installs use the updated bootstrap. No analytics vendor key is needed. Configure the daily analytics:prune job, deploy, and open Admin → Analytics. Test with a signed-out browser that accepts analytics; owner sessions, refusals, privacy signals and known bots are excluded. Counts start at setup and cover consenting browsers only.

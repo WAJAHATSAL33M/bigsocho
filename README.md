@@ -55,3 +55,8 @@ npm run security:env -- --database
 ```
 
 `npm start` forces production mode and runs the environment preflight. No permissive CORS is configured: browser writes require the configured exact origin. Public comment submissions are disabled. See HOSTINGER.md for rate limits and the least-privilege database setup.
+
+
+## Consent and audience insights
+
+A first-party cookie banner and preferences dialog control optional MySQL analytics. The footer Cookie settings control allows withdrawal. Owner-only Admin → Analytics reports consented page/blog views, estimated browsers, visits, UTC trends, popular content, sources and viewport categories. No third-party analytics key is required. See [ANALYTICS.md](ANALYTICS.md) for definitions, privacy limitations, testing, migration and daily retention cleanup.

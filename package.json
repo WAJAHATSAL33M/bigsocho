@@ -15,7 +15,8 @@
     "security:audit": "npm audit --omit=dev",
     "security:check": "npm run security:files && npm test && npm run security:audit",
     "security:http": "node scripts/http-security-check.mjs",
-    "prebuild": "npm run security:files"
+    "prebuild": "npm run security:files",
+    "analytics:prune": "node scripts/prune-analytics.mjs"
   },
   "engines": {
     "node": ">=22"
