@@ -4,3 +4,15 @@ out/
 .env*
 !.env.example
 *.log
+
+# Private credentials, dumps and deployment backups
+*.pem
+*.key
+*.p12
+*.pfx
+*.sql.gz
+*.dump
+*.bak
+*.backup
+*.zip
+coverage/

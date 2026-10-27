@@ -1,10 +1,4 @@
-import {databaseFailure} from '../../../lib/database.mjs';
-import {createHmac} from 'node:crypto';
-import {readJson} from '../../../lib/auth';
-import {trustedOrigin,configured} from '../../../lib/security.mjs';
-import {storageConfigured,getPublishedPosts} from '../../../lib/content';
-import {readComments,changeComments} from '../../../lib/db-comments';
-import {validateComment,visibleComments} from '../../../lib/comments.mjs';
-export const runtime='nodejs';const attempts=new Map();
-export async function GET(request){const slug=new URL(request.url).searchParams.get('slug');if(!slug||!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug))return Response.json({error:'Choose an article.'},{status:400});if(!storageConfigured())return Response.json({comments:[],enabled:false});try{const posts=await getPublishedPosts();if(!posts.some(p=>p.slug===slug))return Response.json({error:'Article not found.'},{status:404});const {comments}=await readComments();return Response.json({comments:visibleComments(comments,slug),enabled:configured()},{headers:{'Cache-Control':'no-store'}})}catch(e){return Response.json({error:e.code?databaseFailure(e):e.message},{status:503})}}
-export async function POST(request){if(!trustedOrigin(request))return Response.json({error:'Request origin is not allowed.'},{status:403});if(!storageConfigured()||!configured())return Response.json({error:'Comments are not available yet.'},{status:503});const now=Date.now();for(const [k,v] of attempts)if(v.until<now)attempts.delete(k);const key=createHmac('sha256',process.env.SESSION_SECRET).update(request.headers.get('x-forwarded-for')?.split(',')[0]||'unknown').digest('hex');const limit=attempts.get(key)||{count:0,until:now+10*60*1000};if(attempts.size>10000||limit.count>=3)return Response.json({error:'Please wait 10 minutes before commenting again.'},{status:429});limit.count++;attempts.set(key,limit);try{const input=await readJson(request);const comment=validateComment(input);const posts=await getPublishedPosts();if(!posts.some(p=>p.slug===comment.slug))return Response.json({error:'This article is unavailable.'},{status:404});await changeComments(comments=>[...comments,comment],`Submit comment on ${comment.slug}`);return Response.json({message:'Your comment was submitted for review. It will appear after approval.'},{status:201})}catch(e){return Response.json({error:e.code?databaseFailure(e):e.message||'Unable to submit your comment.'},{status:400})}}
+// Reader comment controls were removed from the site. Do not keep an unused
+// anonymous write API exposed; historical moderation stays owner-only.
+export function GET(){return Response.json({comments:[],enabled:false},{headers:{'Cache-Control':'no-store'}})}
+export function POST(){return Response.json({error:'Public comments are disabled.'},{status:410,headers:{'Cache-Control':'no-store'}})}

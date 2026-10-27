@@ -5,19 +5,28 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
-    "start": "next start",
+    "start": "node scripts/start-production.mjs",
     "test": "node --experimental-vm-modules --test tests/*.test.mjs",
     "db:setup": "node scripts/setup-db.mjs",
-    "admin:hash": "node scripts/hash-password.mjs"
+    "admin:hash": "node scripts/hash-password.mjs",
+    "security:env": "node scripts/check-env.mjs",
+    "security:files": "node scripts/check-public.mjs",
+    "security:history": "python3 scripts/scan-secrets.py",
+    "security:audit": "npm audit --omit=dev",
+    "security:check": "npm run security:files && npm test && npm run security:audit",
+    "security:http": "node scripts/http-security-check.mjs",
+    "prebuild": "npm run security:files"
   },
   "engines": {
     "node": ">=22"
   },
   "dependencies": {
-    "@next/env": "^16.3.8",
-    "mysql2": "^3.24.6",
-    "next": "^16.0.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "@next/env": "16.4.3",
+    "mysql2": "3.24.6",
+    "next": "16.4.3",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "sanitize-html": "2.18.1",
+    "sharp": "0.35.5"
   }
 }

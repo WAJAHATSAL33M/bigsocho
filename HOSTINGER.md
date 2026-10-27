@@ -68,7 +68,7 @@ Add these in Hostinger's deployment environment settings **before building**:
 | DB_USER | Full database username from hPanel |
 | DB_PASSWORD | The database password |
 | ADMIN_EMAIL | Your owner email |
-| ADMIN_PASSWORD_HASH | Complete raw `scrypt$…$…` value from the script |
+| ADMIN_PASSWORD_HASH | Complete raw `scrypt-v2$…$…` value from the script |
 | SESSION_SECRET | Random secret from the command above |
 
 In hPanel enter values without surrounding quotes; preserve `$` in the password hash. For local `.env.local` only, escape each `$` in the hash as `\$` because Next.js expands environment variables in dotenv files. Never prefix a secret with NEXT_PUBLIC_. Do not commit a real `.env` file or send credentials in chat.
@@ -111,3 +111,23 @@ Admin is excluded from indexing, protected with an HttpOnly/Secure/SameSite Stri
 Content collections use InnoDB rows containing JSON text with revisions and transactional row locks. Uploaded images, login attempt counters and activity records have separate tables. New deployments without DB settings show bundled content, with admin saving disabled. With DB settings present, database errors fail explicitly rather than silently switching to stale bundled content.
 
 `npm test` covers credentials, sessions, CSRF checks, draft filtering, post validation, upload validation, comment visibility, and transactional post/category behavior with an in-memory transaction adapter. `npm run build` validates the production application. Actual HTTP checks also verified that anonymous admin reads return 401 and cross-origin writes return 403. A full browser pass could not be completed in the build environment because the Chromium download failed; verify the responsive admin in your own browser. No live MySQL credentials were available, so database tests use the transaction adapter rather than a running Hostinger database. Tests do not substitute for the real Hostinger/MySQL verification above.
+
+
+## October 27, 2026 security migration — required before this update
+
+1. Back up the existing database using hPanel/phpMyAdmin.
+2. Import **database/security-migration.sql** into the existing database **before deploying**. It only creates the revocable-session and shared-rate-limit tables. New installs should use the updated bootstrap.sql instead.
+3. Rotate the admin password generated in chat. Generate a private password/hash with `npm run admin:hash`, update ADMIN_PASSWORD_HASH, and generate a new random SESSION_SECRET privately. Do not send the password, hash or session secret to chat or commit them. Legacy `scrypt$` hashes remain compatible temporarily, but the new generator uses stronger `scrypt-v2$` parameters.
+4. Use Node.js 22+ and NODE_ENV=production. The npm start wrapper checks configuration before opening the server. If Hostinger uses its own Next.js adapter, set the same production environment explicitly and run the checker separately.
+5. From the production app environment run `npm run security:env -- --database`. It prints check names and pass/fail only, never credential values. Do not paste your raw environment file into chat. Fix all failed checks; review any warnings about broad database privileges or old keys.
+6. DB_SSL=true is required for a remote production database, with certificate verification enabled. Hostinger's loopback DB_HOST=127.0.0.1 can use DB_SSL=false. A private CA can be set in DB_SSL_CA; never disable certificate verification.
+7. Use a separate migration account when possible. The runtime DB account needs only SELECT, INSERT, UPDATE and DELETE on this application's tables. It must not have global FILE, SUPER, GRANT or user-management privileges. Ask Hostinger to restrict the runtime account if hPanel does not offer permissions controls. Run migrations with the setup account, then restore the restricted runtime credentials.
+8. Deploy and sign in again. Existing cookies are invalidated; logout now revokes the stored session. Idle expiry is 30 minutes, absolute expiry eight hours. Keep your private owner email/password available before applying the migration.
+9. Verify CSP/security headers on the actual domain, same-origin login/logout, private drafts/media, and lack of public .env, Git, dumps and backups. Ensure Hostinger/CDN does not cache nonce-bearing HTML, authenticated routes or /api responses.
+10. Enable Hostinger/edge request throttling, bot protection and monitoring. Application limits are shared across workers: five owner login attempts per 15 minutes, 120 owner writes/minute, 240 owner reads/minute, 20 uploads/15 minutes, and 1,200 anonymous media requests/minute. The account-wide login limit deliberately does not trust spoofable forwarding headers; abusive requests can temporarily lock sign-in, so use edge controls for availability.
+
+Public comment submission is now disabled because its UI was removed. Historical moderation remains owner-only. Uploaded JPEG/PNG/WebP files are decoded with a pixel limit and re-encoded as WebP without original metadata. SVG, animated uploads and invalid/truncated images are rejected. Existing image records remain readable.
+
+A nonce-based CSP now blocks inline scripts, inline event handlers and style attributes. Article text is rendered as escaped plain text; publisher HTML is allowlist-sanitized. External HTTPS images/video links remain permitted for your existing content; third-party scripts/analytics are blocked unless explicitly integrated with the CSP.
+
+Do not upload this source repository, database dumps, backup archives or env files to a static/public document root. Deploy through Hostinger's Node.js app integration. The audit cannot inspect or clean your provider filesystem automatically.

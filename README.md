@@ -41,3 +41,17 @@ npm test
 Validation limits and live setup checks are documented in HOSTINGER.md. Hostinger deployment, DNS and a live database require configuration in your own hosting account.
 
 Before monetization, replace placeholder publisher contact details, verify image rights, and review privacy disclosures for services you actually enable. No ad code or analytics trackers are installed by this change.
+
+
+## Security update / audit
+
+Read [SECURITY-AUDIT.md](SECURITY-AUDIT.md) for findings, fixes, verification and remaining provider-side checks. Existing deployments must import [database/security-migration.sql](database/security-migration.sql) before this version. Passwords generated earlier in chat must be rotated privately. This update revokes sessions on logout and expires idle sessions.
+
+```sh
+npm run security:check
+npm run security:history
+# In the production hosting environment only (no secrets are printed):
+npm run security:env -- --database
+```
+
+`npm start` forces production mode and runs the environment preflight. No permissive CORS is configured: browser writes require the configured exact origin. Public comment submissions are disabled. See HOSTINGER.md for rate limits and the least-privilege database setup.
