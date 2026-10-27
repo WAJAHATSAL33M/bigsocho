@@ -1,4 +1,5 @@
-import {loadEnvConfig} from '@next/env';
+import nextEnv from '@next/env';
+const {loadEnvConfig}=nextEnv;
 import {readFile} from 'node:fs/promises';
 import {database,transaction,databaseConfigured} from '../lib/database.mjs';
 import {categories} from '../lib/post-validation.mjs';

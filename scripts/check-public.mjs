@@ -1,0 +1,4 @@
+import {readdir,readFile} from 'node:fs/promises';
+import {join} from 'node:path';
+const findings=[];async function walk(dir){for(const entry of await readdir(dir,{withFileTypes:true})){const path=join(dir,entry.name);if(entry.isSymbolicLink()){findings.push({path,reason:'public symlink'});continue}if(entry.isDirectory()){await walk(path);continue}if(/(?:^|\/)\.(?:env|git)|\.(?:sql|log|bak|zip|pem|key|map)$|(?:package(?:-lock)?\.json|server\.[cm]?js)$/i.test(path))findings.push({path,reason:'sensitive file type'});const data=await readFile(path);const text=data.toString('utf8');if(/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\b(?:ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,})\b/.test(text))findings.push({path,reason:'secret marker'})}}
+await walk('public');console.log(JSON.stringify({publicFileFindings:findings},null,2));if(findings.length)process.exitCode=1;
